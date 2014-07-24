@@ -99,7 +99,7 @@ sub backup {
 	my $config_parsing = &parse_config($ConfigFile);
 	my $operating_system = $config_parsing->{'operating-system'};
 	my $device_ip_address = $config_parsing->{'ip'};
-	my $transport = ($config_parsing->{'transport'} eq "") ? $config_parsing->{'transport'} : "SSH"; # Ternary test for backward compatibility (if option does not exists in XML, defaults to "SSH")
+	my $transport = (defined($config_parsing->{'transport'}) ? $config_parsing->{'transport'} : "SSH"; # Ternary test for backward compatibility (if option does not exists in XML, defaults to "SSH")
 	my $username = $config_parsing->{'username'};
 	my $password = $config_parsing->{'password'};
 	my $store_folder = $config_parsing->{'store-folder'};
