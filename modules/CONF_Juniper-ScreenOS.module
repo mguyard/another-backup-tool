@@ -16,7 +16,7 @@ use Net::Appliance::Session;
 ###################
 
 my $module_device = "[CONF] Juniper ScreenOS";
-my $module_description = "Module Juniper ScreenOS (Backup by SSH)";
+my $module_description = "Module Juniper ScreenOS (Backup by SSH) - WARNING : Deprecated, use CONF_Juniper-Security.module instead.";
 my $author = 'Marc GUYARD <m.guyard@orange-ftgroup.com>';
 my $version = '0.1';
 

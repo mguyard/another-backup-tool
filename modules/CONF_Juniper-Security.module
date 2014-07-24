@@ -16,9 +16,9 @@ use Net::Appliance::Session;
 ###################
 
 my $module_device = "[CONF] Juniper Security";
-my $module_description = "Module Juniper Security for ScreenOS and JunOS (Backup by SSH)";
-my $author = 'Marc GUYARD <m.guyard@orange-ftgroup.com>';
-my $version = '0.1';
+my $module_description = "Module Juniper Security for ScreenOS and JunOS (Backup by SSH or Telnet)";
+my $author = 'Marc GUYARD <m.guyard@orange-ftgroup.com>; Luick <me@luick.fr>';
+my $version = '0.2';
 
 #####################
 # Default arguments #
@@ -34,12 +34,12 @@ my $default_retention = "15";
 # Functions #
 #############
 
-## Function who show the module short description
+## Function which show the module short description
 sub description {
 	print $program."\n	".$module_device." - ".$module_description." (version : ".$version.").\n\n";
 }
 
-## Function who verify the Juniper OS
+## Function which verify the Juniper OS
 sub juniper_operating_system {
 	my $juniper_os = uc $_[0];
 	given($juniper_os) {
@@ -52,7 +52,7 @@ sub juniper_operating_system {
 	}
 }
 
-## Function who generate a XML configuration file
+## Function which generate a XML configuration file
 sub generate {
 	$logger->debug("[".$GenConfigFile."] Generating configuration file ") if $verbose;
 	# Question function :
@@ -63,9 +63,10 @@ sub generate {
 	my $operating_system = &questions("Please specify the OS (leave empty to use the default os)", "SCREENOS", "1", "main::juniper_operating_system");
 	my $device_ip_address = &questions("Please enter the Device IP to backup", "", "1", "verify_ip");
 	my $device_description = &questions("Please enter the description of the device", "", "1", "");
+	my $transport = &questions("Connection by SSH or Telnet (case sensitive)", "SSH", "1", "ssh_or_telnet");
 	my $username = &questions("Please enter the device username", "", "1", "");
 	my $password = &questions("Please enter the device password", "", "1", "");
-	my $store_folder = &questions("Please specify the folder who store the backup", "", "1", "verify_folder");
+	my $store_folder = &questions("Please specify the folder which store the backup", "", "1", "verify_folder");
 	my $file_prefix = &questions("Please enter the backup file prefix (date automaticly add)", "", "1", "");
 	my $retention = &questions("Please enter configuration retention in number of save backup (leave empty to use the default retention : ".$default_retention.")", "", "0", "verify_retention");
 	my %XML = (
@@ -75,6 +76,7 @@ sub generate {
 		'operating-system' => $operating_system,
 		'ip' => $device_ip_address,
 		'description' => $device_description,
+		'transport' => $transport,
 		'username' => $username,
 		'password' => $password,
 		'store-folder' => $store_folder,
@@ -86,7 +88,7 @@ sub generate {
 	$logger->info("[".$GenConfigFile."] Configuration generation finish... ");
 }
 
-## Function who backup device
+## Function which backup device
 sub backup {
 	$logger->debug("[".$ConfigFile."] Starting backuping configuration ") if $verbose;
 	# Declare all configuration from the XML file
@@ -97,6 +99,7 @@ sub backup {
 	my $config_parsing = &parse_config($ConfigFile);
 	my $operating_system = $config_parsing->{'operating-system'};
 	my $device_ip_address = $config_parsing->{'ip'};
+	my $transport = ($config_parsing->{'transport'} eq "") ? $config_parsing->{'transport'} : "SSH"; # Ternary test for backward compatibility (if option does not exists in XML, defaults to "SSH")
 	my $username = $config_parsing->{'username'};
 	my $password = $config_parsing->{'password'};
 	my $store_folder = $config_parsing->{'store-folder'};
@@ -108,7 +111,7 @@ sub backup {
 	# Backup
 	my $session = Net::Appliance::Session->new({
 		host            => $device_ip_address,
-		transport       => 'SSH',
+		transport       => $transport,
 		connect_options => { username => $username, shkc => 0 },
 		personality     => lc($operating_system),
 		add_library     => $dirname."/../phrasebook",
@@ -206,7 +209,7 @@ ABTM - Another Backup Tool Module
 
 =head1 AUTHOR
 
-Script written by Marc GUYARD for Orange NIS <m.guyard@orange-ftgroup.com>.
+Script written by Marc GUYARD for Orange AIS <m.guyard@orange-ftgroup.com>.
 
 =head1 VERSION
 
