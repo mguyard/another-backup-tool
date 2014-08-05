@@ -18,7 +18,7 @@ use Net::OpenSSH;
 my $module_device = "[LOGS] Linux";
 my $module_description = "Module Linux (Backup by SSH)";
 my $author = 'Marc GUYARD <m.guyard@orange.com>';
-my $version = '0.1';
+my $version = '0.2';
 
 #####################
 # Default arguments #
@@ -142,21 +142,61 @@ sub backup {
 	if ( $log_pattern ne "") {
 		$regex = "-regex ".$log_pattern." ";
 	}
-	my $file2backup = $ssh->capture("find ".$log_folder."/ -daystart -ctime ".$ctime." -type f ".$regex." -printf '%p '");
-	if (length($file2backup) != 0) {
-		$ssh->system({ timeout => 3600, stderr_discard => $stderr }, "tar --ignore-failed-read -czf /var/tmp/backup.tgz ".$file2backup);
-			$ssh->error and &return_code(50, "Backup configuration failed : " . $ssh->error);
-		# SCP download
-		$ssh->scp_get({ timeout => 3600 }, '/var/tmp/backup.tgz', $configuration_filename);
-			$ssh->error and &return_code(50, "SCP Configuration failed : " . $ssh->error);
-		# Delete backup on device
-		$ssh->system({ stderr_discard => $stderr }, "rm /var/tmp/backup.tgz");
-			$ssh->error and &return_code(50, "Backup remove failed : " . $ssh->error);
-		# Purge old backup
-		&purge_files($retention, $store_folder, "^".$file_prefix."_.*");
+	# Capture All file to backup
+	my @file2backup = $ssh->capture("find ".$log_folder."/ -daystart -ctime ".$ctime." -type f ".$regex);
+	my $file2backupOneLine = join(" ",@file2backup);
+	# Count Number of array entries
+	my $file2backupCount = scalar(@file2backup);
+	# List compressed file
+	my @compressearch = grep /(.gz|.tgz|.tar.gz|.bzip)$/i, @file2backup;
+	# Count Compressed files
+	my $compressearchCount = scalar(@compressearch);
+	# Verify number of matched files
+	if ($file2backupCount != 0) {
+		# If One File Match
+		if ($file2backupCount == 1) {
+			$logger->debug("Only on file count");
+			# If compressed file found was greater than 1 we compress
+			if ($compressearchCount gt 0) {
+				$logger->debug("One file compressed count to backup");
+				# Find the file extention
+				$compressearch[0] =~ m/(\.[^.]+)$/;
+				$fileext = $1;
+				# Redefine Backup Configuration FileName
+				$configuration_filename = $store_folder."/".$file_prefix."_".$log_frequency."_".$date.".".$fileext;
+				# SCP download
+				$ssh->scp_get({ timeout => 3600 }, $file2backupOneLine, $configuration_filename);
+					$ssh->error and &return_code(50, "SCP Configuration failed : " . $ssh->error);
+			} else {
+				$logger->debug("One file uncompressed count to backup");
+				# Redefine Backup Configuration FileName
+				$configuration_filename = $store_folder."/".$file_prefix."_".$log_frequency."_".$date.".gz";
+				#### Compress
+				$ssh->system({ timeout => 3600, stderr_discard => $stderr }, "gzip -9 ".$file2backupOneLine);
+					$ssh->error and &return_code(50, "Backup configuration failed : " . $ssh->error);
+				# SCP download
+				$ssh->scp_get({ timeout => 3600 }, $file2backupOneLine.".gz" , $configuration_filename);
+					$ssh->error and &return_code(50, "SCP Configuration failed : " . $ssh->error);
+			}
+		# If More than one file match
+		} else {
+			$logger->debug("More than one file count");
+			#### Compress
+			$ssh->system({ timeout => 3600, stderr_discard => $stderr }, "tar --ignore-failed-read -czf /var/tmp/backup.tgz ".$file2backupOneLine);
+				$ssh->error and &return_code(50, "Backup configuration failed : " . $ssh->error);
+			# SCP download
+			$ssh->scp_get({ timeout => 3600 }, '/var/tmp/backup.tgz', $configuration_filename);
+				$ssh->error and &return_code(50, "SCP Configuration failed : " . $ssh->error);
+			# Delete backup on device
+			$ssh->system({ stderr_discard => $stderr }, "rm /var/tmp/backup.tgz");
+				$ssh->error and &return_code(50, "Backup remove failed : " . $ssh->error);
+		}
+	# If No file match
 	} else {
 		$logger->warn("No files to backup");
 	}
+	# Purge old backup
+	&purge_files($retention, $store_folder, "^".$file_prefix."_.*");
 }
 
 ##########
