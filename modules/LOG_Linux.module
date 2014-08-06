@@ -144,6 +144,7 @@ sub backup {
 	}
 	# Capture All file to backup
 	my @file2backup = $ssh->capture("find ".$log_folder."/ -daystart -ctime ".$ctime." -type f ".$regex);
+	chomp @file2backup;
 	my $file2backupOneLine = join(" ",@file2backup);
 	# Count Number of array entries
 	my $file2backupCount = scalar(@file2backup);
@@ -160,8 +161,8 @@ sub backup {
 			if ($compressearchCount gt 0) {
 				$logger->debug("One file compressed count to backup");
 				# Find the file extention
-				$compressearch[0] =~ m/(\.[^.]+)$/;
-				$fileext = $1;
+				$compressearch[0] =~ m/\.([^.]+)$/;
+				my $fileext = $1;
 				# Redefine Backup Configuration FileName
 				$configuration_filename = $store_folder."/".$file_prefix."_".$log_frequency."_".$date.".".$fileext;
 				# SCP download
