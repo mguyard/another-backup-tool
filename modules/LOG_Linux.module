@@ -173,11 +173,14 @@ sub backup {
 				# Redefine Backup Configuration FileName
 				$configuration_filename = $store_folder."/".$file_prefix."_".$log_frequency."_".$date.".gz";
 				#### Compress
-				$ssh->system({ timeout => 3600, stderr_discard => $stderr }, "gzip -9 ".$file2backupOneLine);
+				$ssh->system({ timeout => 3600, stderr_discard => $stderr }, "gzip -9 -c ".$file2backupOneLine." > ".$file2backupOneLine.".gz");
 					$ssh->error and &return_code(50, "Backup configuration failed : " . $ssh->error);
 				# SCP download
 				$ssh->scp_get({ timeout => 3600 }, $file2backupOneLine.".gz" , $configuration_filename);
 					$ssh->error and &return_code(50, "SCP Configuration failed : " . $ssh->error);
+                # Delete backup on device
+                $ssh->system({ stderr_discard => $stderr }, "rm ".$file2backupOneLine.".gz");
+                    $ssh->error and &return_code(50, "Backup remove failed : " . $ssh->error);
 			}
 		# If More than one file match
 		} else {
