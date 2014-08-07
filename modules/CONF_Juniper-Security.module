@@ -162,7 +162,7 @@ sub backup {
 		}
 	};
 	if ( $@ ) {
-        $logger->debug("Backup Error : $@");
+        $logger->debug("Backup Error : $@") if $verbose;
 		&return_code(50, "Error on backup for the configuration file ".$ConfigFile);
 	}
 	# Purge old backup
