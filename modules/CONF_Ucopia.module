@@ -17,7 +17,7 @@ use WWW::Mechanize;
 my $module_device = "[CONF] Ucopia";
 my $module_description = "Module Ucopia (Backup by WebUI)";
 my $author = 'Marc GUYARD <m.guyard@orange.com>';
-my $version = '0.1';
+my $version = '0.2';
 
 #####################
 # Default arguments #
@@ -110,12 +110,18 @@ sub backup {
         if ( $mech->content !~ /Erreur d\'authentification/ ) {
         	$logger->debug("[".$ConfigFile."] Login to administration interface success") if $verbose;
         	$logger->debug("[".$ConfigFile."] Trying to download backup to ".$download_page) if $verbose;
+            my $valid = '0';
+            my $loop = '0';
         	$mech->get( $download_page );
         	if ( $mech->success ) {
 				# On recupere le contenu de la configuration
 				$mech->save_content( $configuration_filename );
 				if ($mech->success ) {
-					$logger->debug("[".$ConfigFile."] Dowload backup succeeded") if $verbose;
+                    if (-z $configuration_filename ) {
+                        &return_code(50, "[".$ConfigFile."] Download backup failed. File was O bytes size.");
+                    } else {
+                        $logger->debug("[".$ConfigFile."] Download backup succeeded") if $verbose;
+                    }
 				} else {
 					print $logger->fatal("[".$ConfigFile."] Failed to download Backup. Return HTTP code : ".$mech->status()."\n");
 				}
