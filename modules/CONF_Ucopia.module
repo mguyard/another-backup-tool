@@ -117,6 +117,7 @@ sub backup {
 				# On recupere le contenu de la configuration
 				$mech->save_content( $configuration_filename );
 				if ($mech->success ) {
+                    # Teste si la taille est egale a 0 bytes
                     if (-z $configuration_filename ) {
                         &return_code(50, "[".$ConfigFile."] Download backup failed. File was O bytes size.");
                     } else {
