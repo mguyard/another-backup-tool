@@ -38,3 +38,10 @@ Mettre en place les executions automatiques
 Mettre en place la configuration a partir de l'exemple fournit et adaptez le à votre besoin
 
     $ cp /opt/another-backup-tool/configuration.default.ini /opt/another-backup-tool/configuration.ini
+
+2) Mise à jour
+----------------------------------
+
+Toutes les commandes précédés d'un **#** sont à éxécuter en **root** alors que les commandes précédés d'un **$** sont à éxécuter en **abt**
+
+    $ git pull --progress
