@@ -3,57 +3,98 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
     <title>Another Backup Tool by mguyard</title>
   </head>
 
   <body>
-    <header>
+    <div id="container">
       <div class="inner">
-        <h1>Another Backup Tool</h1>
-        <h2>Sauvegarde presque tout !</h2>
-        <a href="https://github.com/mguyard/another-backup-tool" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
+        <header>
+          <h1>Another Backup Tool</h1>
+          <h2>Sauvegarde presque tout !</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/mguyard/another-backup-tool/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/mguyard/another-backup-tool/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/mguyard/another-backup-tool" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
           <h1>
 <a name="another-backup-tool" class="anchor" href="#another-backup-tool"><span class="octicon octicon-link"></span></a>Another Backup Tool</h1>
 
-<p>Avec Another Backup Tool, vous avez un outil simple, rapide a déployer, qui vous permet de tout (ou presque) sauvegarder.
-Une nombre important de modules sont fournit de base pour de la sauvegarde de configuration ainsi que des logs.</p>
+<p>Avec Another Backup Tool, vous avez un outil simple, rapide a déployer, qui vous permet de tout (ou presque) sauvegarder. Une nombre important de modules sont fournit de base pour de la sauvegarde de configuration ainsi que des logs.</p>
 
 <p>L'outil fournit un rapport par email pour suivre le resultat de vos sauvegardes.</p>
+
+<h2>
+<a name="1-installation" class="anchor" href="#1-installation"><span class="octicon octicon-link"></span></a>1) Installation</h2>
+
+<p>L'installation est décrite pour la distribution Debian. Cependant, en ajustant les commandes à votre distribution, cela ne devrait pas poser de problème.
+Toutes les commandes précédés d'un <strong>#</strong> sont à éxécuter en <strong>root</strong> alors que les commandes précédés d'un <strong>$</strong> sont à éxécuter en <strong>abt</strong></p>
+
+<h3>
+<a name="debian-recommended" class="anchor" href="#debian-recommended"><span class="octicon octicon-link"></span></a>Debian (<em>recommended</em>)</h3>
+
+<p>Installez les pré-requis :</p>
+
+<pre><code># aptitude install cpanminus git unzip makepatch
+# aptitude install liblog-log4perl-perl libxml-simple-perl libdir-purge-perl libfile-find-rule-perl libmime-lite-perl libconfig-inifiles-perl libparallel-forkmanager-perl libdata-validate-ip-perl libnet-sftp-foreign-perl libnet-openssh-perl libwww-mechanize-perl libnet-appliance-session-perl libnet-scp-expect-perl
+# cpanm File::DirList
+</code></pre>
+
+<p>Télécharger les sources :</p>
+
+<pre><code># git clone --progress https://github.com/mguyard/another-backup-tool.git /opt/another-backup-tool
+</code></pre>
+
+<p>Créez l'utilisateur de service ABT</p>
+
+<pre><code># useradd -M -d /opt/another-backup-tool -c "Another Backup Tool User" -s /bin/bash abt
+</code></pre>
+
+<p>Modifiez les autorisations user/group sur le répertoire ABT</p>
+
+<pre><code># chown -R abt:abt /opt/another-backup-tool
+</code></pre>
+
+<p>Mettre en place les executions automatiques</p>
+
+<pre><code># cp /opt/another-backup-tool/examples/cron/ABT /etc/cron.d/
+</code></pre>
+
+<p>Mettre en place la configuration a partir de l'exemple fournit et adaptez le à votre besoin</p>
+
+<pre><code>$ cp /opt/another-backup-tool/configuration.default.ini /opt/another-backup-tool/configuration.ini
+</code></pre>
+
+<h2>
+<a name="2-mise-%C3%A0-jour" class="anchor" href="#2-mise-%C3%A0-jour"><span class="octicon octicon-link"></span></a>2) Mise à jour</h2>
+
+<p>Toutes les commandes précédés d'un <strong>#</strong> sont à éxécuter en <strong>root</strong> alors que les commandes précédés d'un <strong>$</strong> sont à éxécuter en <strong>abt</strong></p>
+
+<pre><code>$ git pull --progress
+</code></pre>
         </section>
 
-        <aside id="sidebar">
-          <a href="https://github.com/mguyard/another-backup-tool/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/mguyard/another-backup-tool/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+        <footer>
+          Another Backup Tool is maintained by <a href="https://github.com/mguyard">mguyard</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
 
-          <p class="repo-owner"><a href="https://github.com/mguyard/another-backup-tool"></a> is maintained by <a href="https://github.com/mguyard">mguyard</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
+        
       </div>
     </div>
-
-  
   </body>
 </html>
