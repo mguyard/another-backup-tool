@@ -1,10 +1,10 @@
 # ABT Crontab Backup
 
 # Backup Daily
-00 00   * * *   abt     /opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/daily --reportemail --verbose >/dev/null 2>&1
+00 00	* * *	abt	/opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/daily --reportemail --verbose >/dev/null 2>&1
 
 # Backup Weekly
-00 00   * * 7   abt     /opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/weekly --reportemail --verbose >/dev/null 2>&1
+00 00	* * 7	abt	/opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/weekly --reportemail --verbose >/dev/null 2>&1
 
 # Backup Monthly
-00 00   1 * *   abt     /opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/monthly --reportemail --verbose >/dev/null 2>&1
+00 00	1 * *	abt	/opt/another-backup-tool/ABT.pl --directory /opt/another-backup-tool/configurations/monthly --reportemail --verbose >/dev/null 2>&1
