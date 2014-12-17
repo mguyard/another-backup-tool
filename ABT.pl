@@ -70,6 +70,7 @@ my $email_relay = &parse_configvars('email','email.relay.server');
 my $email_src = &parse_configvars('email','email.address.src');
 my $email_dst = &parse_configvars('email','email.address.dst');
 my $email_cc = &parse_configvars('email','email.address.cc');
+my $email_footer = &parse_configvars('email','email.footer');
 my $options_shuffle = &parse_configvars('options','options.shuffle');
 
 #####################
@@ -125,8 +126,8 @@ sub reportemail {
 		print "Clef=".$configuration_files." Valeur=".$result."\n" if $verbose;
 		$msg_html_content = $msg_html_content."<tr><td><b><i>".$configuration_files."</i></b></td>".$result."</tr>";
 	}
-	my $msg_html_footer = "</table><br><br>Pour chaques erreurs, merci de suivre la proc&eacute;dure <a href='https://wiki.drs.local/wiki/Interne/Another-Backup-Tool#Comment_le_CdS_peut_relancer_une_sauvegarde_manuelle.C2.A0.3F'>suivante</a>";
-	my $message_html_full = $msg_html_header.$msg_html_content.$msg_html_footer;
+    $msg_html_content = $msg_html_content."</table><br><br>";
+	my $message_html_full = $msg_html_header.$msg_html_content.$email_footer;
 	# Generation de l'email
 	my $msg = MIME::Lite->build(
 		From	=> 'Another Backup Tool <'.$email_src.'>',
