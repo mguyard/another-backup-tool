@@ -108,7 +108,8 @@ sub backup {
 	my $mech = WWW::Mechanize->new(
 		agent => 'Backup NSOC NIS' ,
 		autocheck => 0,
-		ssl_opts => { verify_hostname => 0 }
+        timeout => 30,
+		ssl_opts => { verify_hostname => 0 },
 	);
 	my $valid = '0';
     my $count = 0;
