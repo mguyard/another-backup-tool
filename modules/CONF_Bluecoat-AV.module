@@ -111,7 +111,8 @@ sub backup {
 		ssl_opts => { verify_hostname => 0 }
 	);
 	my $valid = '0';
-	while ( $valid eq '0' ) {
+    my $count = 0;
+	while ( $valid eq '0' || $count ge 5 ) {
 		my $url = "https://".$device_ip_address.":".$webui_port."/settings.dat";
 		$mech->credentials( $username => $password );
 		$mech->get( $url );
@@ -121,6 +122,7 @@ sub backup {
 				$valid = '1';
 			} else {
 				$logger->warn("[".$ConfigFile."] The url (".$url.") get return a HTML page and not the backup configuration file\n");
+                $count++;
 			}
 		} else {
 			&return_code(50, "[".$ConfigFile."] Failed to get url (".$url."). Return HTTP code : ".$mech->status()." with message ".$mech->response->status_line);
