@@ -110,12 +110,14 @@ sub backup {
 			key_path	=> $certificate,
 			kill_ssh_on_timeout => 1,
 			timeout		=> 30,
+            master_opts => [-o => "StrictHostKeyChecking=no"],
 		);
 	} else {
 		$ssh = Net::OpenSSH->new($device_ip_address,
 			user		=> $username,
 			kill_ssh_on_timeout => 1,
 			timeout		=> 30,
+            master_opts => [-o => "StrictHostKeyChecking=no"],
 		);
 	}
 	$ssh->error and &return_code(50, "Couldn't establish SSH connection : " . $ssh->error);
